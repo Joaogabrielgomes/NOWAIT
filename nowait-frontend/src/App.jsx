@@ -9,11 +9,11 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import HomePage from './pages/HomePage'
 import EstabelecimentoPage from './pages/EstabelecimentoPage'
-import MinhaFilaPage from './pages/MinhaFilaPage'
-import MeusAgendamentosPage from './pages/MeusAgendamentosPage'
+import MinhasSolicitacoesPage from './pages/MinhasSolicitacoesPage'
 import CadastrarEstabelecimentoPage from './pages/CadastrarEstabelecimentoPage'
 import PainelEstabelecimentoPage from './pages/PainelEstabelecimentoPage'
 import AdminPage from './pages/AdminPage'
+import PerfilPage from './pages/PerfilPage'
 
 function RotaPrivada({ children, rolesPermitidos }) {
   const { usuario } = useAuth()
@@ -41,12 +41,15 @@ function AppRoutes() {
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/estabelecimentos/:id" element={<EstabelecimentoPage />} />
 
-          <Route path="/minha-fila" element={
-            <RotaPrivada rolesPermitidos={['CLIENTE']}><MinhaFilaPage /></RotaPrivada>
+          <Route path="/perfil" element={
+            <RotaPrivada><PerfilPage /></RotaPrivada>
           } />
-          <Route path="/meus-agendamentos" element={
-            <RotaPrivada rolesPermitidos={['CLIENTE']}><MeusAgendamentosPage /></RotaPrivada>
+
+          <Route path="/minhas-solicitacoes" element={
+            <RotaPrivada rolesPermitidos={['CLIENTE']}><MinhasSolicitacoesPage /></RotaPrivada>
           } />
+          <Route path="/minha-fila" element={<Navigate to="/minhas-solicitacoes" replace />} />
+          <Route path="/meus-agendamentos" element={<Navigate to="/minhas-solicitacoes" replace />} />
 
           <Route path="/painel/cadastro" element={
             <RotaPrivada rolesPermitidos={['ESTABELECIMENTO']}><CadastrarEstabelecimentoPage /></RotaPrivada>

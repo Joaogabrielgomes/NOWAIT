@@ -75,6 +75,12 @@ a:hover { color: var(--primary-hover); }
   gap: 16px;
 }
 
+.grid-fit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
 .form-group { margin-bottom: 14px; }
 
 .form-group label {
@@ -87,7 +93,7 @@ a:hover { color: var(--primary-hover); }
 .form-row { display: flex; gap: 12px; }
 .form-row .form-group { flex: 1; }
 
-input, select {
+input, select, textarea {
   width: 100%;
   padding: 10px 12px;
   background: var(--bg-elevated);
@@ -95,9 +101,10 @@ input, select {
   border-radius: 8px;
   color: var(--text);
   font-size: 0.95rem;
+  font-family: inherit;
 }
 
-input:focus, select:focus {
+input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--primary);
 }
@@ -165,7 +172,7 @@ button.small { padding: 6px 12px; font-size: 0.8rem; }
   letter-spacing: 0.4px;
 }
 
-.badge.AGUARDANDO, .badge.CONFIRMADO, .badge.LIVRE { background: rgba(242, 184, 75, 0.15); color: var(--warning); }
+.badge.AGUARDANDO, .badge.PENDENTE, .badge.CONFIRMADO, .badge.LIVRE { background: rgba(242, 184, 75, 0.15); color: var(--warning); }
 .badge.CHAMADO { background: rgba(62, 207, 142, 0.15); color: var(--success); }
 .badge.ATENDIDO, .badge.CONCLUIDO, .badge.OCUPADA { background: rgba(154, 161, 173, 0.15); color: var(--text-muted); }
 .badge.CANCELADO, .badge.EXPIRADO { background: rgba(239, 84, 100, 0.15); color: var(--danger); }
@@ -274,4 +281,60 @@ th { color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transfo
   font-weight: 400;
   cursor: pointer;
 }
-.link-button:hover { color: var(--primary-hover); text-decoration: underline; }
+.link-button:hover { background: none; color: var(--primary-hover); text-decoration: underline; }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 24px;
+}
+
+.pagination button {
+  min-width: 36px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.pagination-dots {
+  color: var(--text-muted);
+  padding: 0 4px;
+}
+
+.chamado-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px;
+}
+
+.chamado-line strong {
+  font-size: 0.95rem;
+}
+
+.chamado-line .text-muted {
+  font-size: 0.85rem;
+}
+
+.favorito-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: none;
+  border: none;
+  padding: 2px;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--text-muted);
+}
+
+.favorito-btn:hover { background: none; color: var(--warning); }
+
+.star-rating { display: inline-flex; gap: 2px; line-height: 1; }
+.star { color: var(--border); }
+.star.filled { color: var(--primary); }
+.star.interactive { cursor: pointer; }
+.favorito-btn.ativo { color: var(--warning); }

@@ -6,15 +6,17 @@ CREATE TABLE agendamentos (
     quantidade_pessoas    INT          NOT NULL,
     data_hora             DATETIME     NOT NULL,
     tolerancia_minutos    INT          NOT NULL DEFAULT 15,
-    status                VARCHAR(20)  NOT NULL DEFAULT 'CONFIRMADO',
+    status                VARCHAR(20)  NOT NULL DEFAULT 'PENDENTE',
+    motivo_cancelamento   VARCHAR(255) NULL,
+    avaliacao_liberada    BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at            DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at            DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     CONSTRAINT pk_agendamentos                 PRIMARY KEY (id),
     CONSTRAINT fk_agendamentos_estabelecimento FOREIGN KEY (estabelecimento_id) REFERENCES estabelecimentos(id),
     CONSTRAINT fk_agendamentos_cliente         FOREIGN KEY (cliente_id) REFERENCES usuarios(id),
-    CONSTRAINT fk_agendamentos_mesa            FOREIGN KEY (mesa_id) REFERENCES mesas(id),
-    CONSTRAINT chk_agendamentos_status         CHECK (status IN ('CONFIRMADO', 'CONCLUIDO', 'CANCELADO', 'EXPIRADO')),
+    CONSTRAINT fk_agendamentos_mesa            FOREIGN KEY (mesa_id) REFERENCES mesas(id) ON DELETE SET NULL,
+    CONSTRAINT chk_agendamentos_status         CHECK (status IN ('PENDENTE', 'CONFIRMADO', 'CONCLUIDO', 'CANCELADO', 'EXPIRADO')),
     CONSTRAINT chk_agendamentos_qtd_pessoas    CHECK (quantidade_pessoas > 0)
 );
 

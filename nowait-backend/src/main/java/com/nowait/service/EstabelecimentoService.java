@@ -35,6 +35,7 @@ public class EstabelecimentoService {
         Estabelecimento estabelecimento = Estabelecimento.builder()
                 .usuario(dono)
                 .nome(dto.getNome())
+                .telefone(dto.getTelefone())
                 .cep(endereco.getCep())
                 .logradouro(endereco.getLogradouro())
                 .numero(dto.getNumero())
@@ -56,6 +57,7 @@ public class EstabelecimentoService {
         EnderecoDTO endereco = cepService.buscarEndereco(dto.getCep());
 
         estabelecimento.setNome(dto.getNome());
+        estabelecimento.setTelefone(dto.getTelefone());
         estabelecimento.setCep(endereco.getCep());
         estabelecimento.setLogradouro(endereco.getLogradouro());
         estabelecimento.setNumero(dto.getNumero());
@@ -85,6 +87,12 @@ public class EstabelecimentoService {
                 .toList();
     }
 
+    public List<EstabelecimentoResponseDTO> buscarPorNome(String nome) {
+        return estabelecimentoRepository.findByNomeContainingIgnoreCaseOrderByNomeAsc(nome).stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+
     public Estabelecimento buscarEntidadePorId(String id) {
         return estabelecimentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Estabelecimento", "id", id));
@@ -102,6 +110,7 @@ public class EstabelecimentoService {
                 .id(estabelecimento.getId())
                 .usuarioId(estabelecimento.getUsuario().getId())
                 .nome(estabelecimento.getNome())
+                .telefone(estabelecimento.getTelefone())
                 .endereco(EnderecoDTO.builder()
                         .cep(estabelecimento.getCep())
                         .logradouro(estabelecimento.getLogradouro())

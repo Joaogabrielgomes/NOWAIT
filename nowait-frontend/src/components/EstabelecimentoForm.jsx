@@ -3,6 +3,7 @@ import { cepService, extrairMensagemErro } from '../services/api'
 
 export default function EstabelecimentoForm({ inicial, aoSalvar, salvando }) {
   const [nome, setNome] = useState(inicial?.nome || '')
+  const [telefone, setTelefone] = useState(inicial?.telefone || '')
   const [cep, setCep] = useState(inicial?.endereco?.cep || '')
   const [numero, setNumero] = useState(inicial?.endereco?.numero || '')
   const [complemento, setComplemento] = useState(inicial?.endereco?.complemento || '')
@@ -29,7 +30,7 @@ export default function EstabelecimentoForm({ inicial, aoSalvar, salvando }) {
     e.preventDefault()
     setErro('')
     try {
-      await aoSalvar({ nome, cep, numero, complemento })
+      await aoSalvar({ nome, telefone, cep, numero, complemento })
     } catch (e) {
       setErro(extrairMensagemErro(e, 'Não foi possível salvar o estabelecimento'))
     }
@@ -42,6 +43,17 @@ export default function EstabelecimentoForm({ inicial, aoSalvar, salvando }) {
       <div className="form-group">
         <label>Nome do estabelecimento</label>
         <input value={nome} onChange={(e) => setNome(e.target.value)} required maxLength={150} />
+      </div>
+
+      <div className="form-group">
+        <label>Telefone</label>
+        <input
+          value={telefone}
+          onChange={(e) => setTelefone(e.target.value)}
+          placeholder="(11) 98765-4321"
+          required
+          maxLength={20}
+        />
       </div>
 
       <div className="form-row">

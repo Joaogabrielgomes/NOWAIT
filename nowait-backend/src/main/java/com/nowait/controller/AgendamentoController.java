@@ -1,5 +1,6 @@
 package com.nowait.controller;
 
+import com.nowait.dto.AgendamentoMotivoDTO;
 import com.nowait.dto.AgendamentoRequestDTO;
 import com.nowait.dto.AgendamentoResponseDTO;
 import com.nowait.model.Usuario;
@@ -38,10 +39,26 @@ public class AgendamentoController {
         return ResponseEntity.ok(agendamentoService.listarMeus(usuario));
     }
 
+    @PatchMapping("/api/agendamentos/{id}/aceitar")
+    public ResponseEntity<AgendamentoResponseDTO> aceitar(
+            @PathVariable String id, @AuthenticationPrincipal Usuario usuario) {
+        return ResponseEntity.ok(agendamentoService.aceitar(id, usuario));
+    }
+
+    @PatchMapping("/api/agendamentos/{id}/recusar")
+    public ResponseEntity<AgendamentoResponseDTO> recusar(
+            @PathVariable String id,
+            @Valid @RequestBody(required = false) AgendamentoMotivoDTO dto,
+            @AuthenticationPrincipal Usuario usuario) {
+        return ResponseEntity.ok(agendamentoService.recusar(id, dto, usuario));
+    }
+
     @PatchMapping("/api/agendamentos/{id}/cancelar")
     public ResponseEntity<AgendamentoResponseDTO> cancelar(
-            @PathVariable String id, @AuthenticationPrincipal Usuario usuario) {
-        return ResponseEntity.ok(agendamentoService.cancelar(id, usuario));
+            @PathVariable String id,
+            @Valid @RequestBody(required = false) AgendamentoMotivoDTO dto,
+            @AuthenticationPrincipal Usuario usuario) {
+        return ResponseEntity.ok(agendamentoService.cancelar(id, dto, usuario));
     }
 
     @PatchMapping("/api/agendamentos/{id}/confirmar-chegada")

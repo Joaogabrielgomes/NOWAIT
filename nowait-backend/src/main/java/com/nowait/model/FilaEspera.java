@@ -51,6 +51,10 @@ public class FilaEspera {
     @Column(name = "hora_atendimento")
     private LocalDateTime horaAtendimento;
 
+    @Column(name = "avaliacao_liberada", nullable = false)
+    @Builder.Default
+    private Boolean avaliacaoLiberada = false;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

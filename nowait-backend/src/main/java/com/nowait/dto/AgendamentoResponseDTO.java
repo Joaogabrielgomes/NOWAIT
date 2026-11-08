@@ -23,5 +23,7 @@ public class AgendamentoResponseDTO {
     private LocalDateTime dataHora;
     private Integer toleranciaMinutos;
     private String status;
+    private String motivoCancelamento;
+    private Boolean avaliacaoLiberada;
     private LocalDateTime createdAt;
 }

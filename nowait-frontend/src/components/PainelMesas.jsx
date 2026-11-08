@@ -66,7 +66,7 @@ export default function PainelMesas({ estabelecimentoId }) {
       </div>
 
       <p className="text-muted mb-16">
-        Ao liberar uma mesa, o sistema tenta chamar automaticamente o próximo cliente da fila que caiba nela.
+        A chamada de clientes da fila é sempre manual, feita no painel de fila de espera.
       </p>
 
       {mesas.length === 0 ? (

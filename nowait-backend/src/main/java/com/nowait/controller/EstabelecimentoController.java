@@ -39,6 +39,11 @@ public class EstabelecimentoController {
         return ResponseEntity.ok(estabelecimentoService.listarTodos());
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<EstabelecimentoResponseDTO>> buscarPorNome(@RequestParam String nome) {
+        return ResponseEntity.ok(estabelecimentoService.buscarPorNome(nome));
+    }
+
     @GetMapping("/me")
     public ResponseEntity<EstabelecimentoResponseDTO> meuEstabelecimento(@AuthenticationPrincipal Usuario usuario) {
         return ResponseEntity.ok(estabelecimentoService.buscarPorDono(usuario));

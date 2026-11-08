@@ -29,6 +29,9 @@ public class Estabelecimento {
     @Column(nullable = false, length = 150)
     private String nome;
 
+    @Column(nullable = false, length = 20)
+    private String telefone;
+
     @Column(nullable = false, length = 9)
     private String cep;
 

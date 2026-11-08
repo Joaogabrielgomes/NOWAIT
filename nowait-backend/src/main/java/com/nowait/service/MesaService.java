@@ -29,6 +29,7 @@ public class MesaService {
     private final MesaRepository         mesaRepository;
     private final EstabelecimentoService estabelecimentoService;
     private final FilaEsperaService      filaEsperaService;
+    private final AgendamentoService     agendamentoService;
     private final AuditoriaService       auditoriaService;
 
     public MesaResponseDTO criar(String estabelecimentoId, MesaRequestDTO dto, Usuario solicitante) {
@@ -82,7 +83,8 @@ public class MesaService {
                 ENTIDADE_MESA, mesa.getId(), "status=" + novoStatus);
 
         if (liberada) {
-            filaEsperaService.tentarChamarProximoAutomaticamente(mesa.getEstabelecimento().getId());
+            filaEsperaService.marcarAvaliacaoLiberadaPorMesa(mesa.getId());
+            agendamentoService.marcarAvaliacaoLiberadaPorMesa(mesa.getId());
         }
 
         return toResponseDTO(mesa);
