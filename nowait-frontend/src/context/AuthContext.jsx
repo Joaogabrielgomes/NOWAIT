@@ -16,8 +16,13 @@ export function AuthProvider({ children }) {
     setUsuario(null)
   }
 
+  const atualizarUsuario = (dadosPerfil) => {
+    const atualizado = sessionHelper.atualizarDadosLocais(dadosPerfil)
+    setUsuario(atualizado)
+  }
+
   return (
-    <AuthContext.Provider value={{ usuario, login, logout }}>
+    <AuthContext.Provider value={{ usuario, login, logout, atualizarUsuario }}>
       {children}
     </AuthContext.Provider>
   )

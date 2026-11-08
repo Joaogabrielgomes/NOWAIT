@@ -12,6 +12,10 @@ public class EstabelecimentoRequestDTO {
     @Size(max = 150, message = "Nome deve ter no máximo 150 caracteres")
     private String nome;
 
+    @NotBlank(message = "Telefone é obrigatório")
+    @Pattern(regexp = "^\\(?\\d{2}\\)?\\s?\\d{4,5}-?\\d{4}$", message = "Telefone inválido")
+    private String telefone;
+
     @NotBlank(message = "CEP é obrigatório")
     @Pattern(regexp = "^\\d{5}-?\\d{3}$", message = "CEP inválido")
     private String cep;

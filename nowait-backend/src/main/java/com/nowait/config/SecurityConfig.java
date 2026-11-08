@@ -4,6 +4,8 @@ import com.nowait.filter.RateLimitGlobalFilter;
 import com.nowait.filter.RateLimitUsuarioFilter;
 import com.nowait.model.Perfil;
 import com.nowait.security.JwtAuthenticationFilter;
+import com.nowait.security.RestAccessDeniedHandler;
+import com.nowait.security.RestAuthenticationEntryPoint;
 import com.nowait.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,11 +39,13 @@ public class SecurityConfig {
     @Value("${cors.allowed-origins}")
     private String allowedOrigin;
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final RateLimitGlobalFilter   rateLimitGlobalFilter;
-    private final RateLimitUsuarioFilter  rateLimitUsuarioFilter;
-    private final UsuarioService          usuarioService;
-    private final PasswordEncoder         passwordEncoder;
+    private final JwtAuthenticationFilter    jwtAuthFilter;
+    private final RateLimitGlobalFilter      rateLimitGlobalFilter;
+    private final RateLimitUsuarioFilter     rateLimitUsuarioFilter;
+    private final UsuarioService             usuarioService;
+    private final PasswordEncoder            passwordEncoder;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+    private final RestAccessDeniedHandler      restAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -56,8 +60,12 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.GET, "/api/estabelecimentos").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/estabelecimentos/me").hasRole(Perfil.ESTABELECIMENTO)
+                .requestMatchers(HttpMethod.GET, "/api/estabelecimentos/search").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/estabelecimentos/{id}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/estabelecimentos/*/mesas").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/estabelecimentos/*/fila/resumo").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/estabelecimentos/*/avaliacoes").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/estabelecimentos/*/avaliacoes/resumo").permitAll()
 
                 .requestMatchers(HttpMethod.POST, "/api/estabelecimentos").hasRole(Perfil.ESTABELECIMENTO)
                 .requestMatchers(HttpMethod.PUT, "/api/estabelecimentos/**").hasRole(Perfil.ESTABELECIMENTO)
@@ -68,7 +76,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/mesas/**").hasRole(Perfil.ESTABELECIMENTO)
 
                 .requestMatchers(HttpMethod.POST, "/api/estabelecimentos/*/fila").hasRole(Perfil.CLIENTE)
+                .requestMatchers(HttpMethod.POST, "/api/estabelecimentos/*/favorito").hasRole(Perfil.CLIENTE)
+                .requestMatchers(HttpMethod.DELETE, "/api/estabelecimentos/*/favorito").hasRole(Perfil.CLIENTE)
+                .requestMatchers(HttpMethod.GET, "/api/favoritos").hasRole(Perfil.CLIENTE)
+                .requestMatchers(HttpMethod.GET, "/api/favoritos/ids").hasRole(Perfil.CLIENTE)
                 .requestMatchers(HttpMethod.GET, "/api/fila/me/ativa").hasRole(Perfil.CLIENTE)
+                .requestMatchers(HttpMethod.GET, "/api/fila/me/historico").hasRole(Perfil.CLIENTE)
                 .requestMatchers(HttpMethod.GET, "/api/estabelecimentos/*/fila").hasRole(Perfil.ESTABELECIMENTO)
                 .requestMatchers(HttpMethod.PATCH, "/api/fila/*/chamar").hasRole(Perfil.ESTABELECIMENTO)
                 .requestMatchers(HttpMethod.PATCH, "/api/fila/*/atender").hasRole(Perfil.ESTABELECIMENTO)
@@ -76,7 +89,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/estabelecimentos/*/agendamentos").hasRole(Perfil.CLIENTE)
                 .requestMatchers(HttpMethod.GET, "/api/agendamentos/me").hasRole(Perfil.CLIENTE)
                 .requestMatchers(HttpMethod.GET, "/api/estabelecimentos/*/agendamentos").hasRole(Perfil.ESTABELECIMENTO)
+                .requestMatchers(HttpMethod.PATCH, "/api/agendamentos/*/aceitar").hasRole(Perfil.ESTABELECIMENTO)
+                .requestMatchers(HttpMethod.PATCH, "/api/agendamentos/*/recusar").hasRole(Perfil.ESTABELECIMENTO)
                 .requestMatchers(HttpMethod.PATCH, "/api/agendamentos/*/confirmar-chegada").hasRole(Perfil.ESTABELECIMENTO)
+
+                .requestMatchers(HttpMethod.POST, "/api/avaliacoes").hasRole(Perfil.CLIENTE)
+                .requestMatchers(HttpMethod.GET, "/api/avaliacoes/pendentes").hasRole(Perfil.CLIENTE)
 
                 .requestMatchers("/api/admin/**").hasRole(Perfil.ADMIN)
 
@@ -84,6 +102,9 @@ public class SecurityConfig {
             )
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(restAuthenticationEntryPoint)
+                .accessDeniedHandler(restAccessDeniedHandler))
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(rateLimitGlobalFilter,  UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(rateLimitUsuarioFilter, UsernamePasswordAuthenticationFilter.class)

@@ -54,6 +54,8 @@ export default function RegisterPage() {
               onChange={(e) => setSenha(e.target.value)}
               required
               minLength={6}
+              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{6,}$"
+              title="Mínimo 6 caracteres, com 1 maiúscula, 1 minúscula e 1 caractere especial."
             />
             <small className="text-muted">Mínimo 6 caracteres, com maiúscula, minúscula e caractere especial.</small>
           </div>

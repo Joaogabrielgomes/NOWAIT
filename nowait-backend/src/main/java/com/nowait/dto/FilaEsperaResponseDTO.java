@@ -15,6 +15,7 @@ public class FilaEsperaResponseDTO {
 
     private String id;
     private String estabelecimentoId;
+    private String estabelecimentoNome;
     private String clienteId;
     private String clienteNome;
     private String mesaId;
@@ -25,4 +26,5 @@ public class FilaEsperaResponseDTO {
     private LocalDateTime horaEntrada;
     private LocalDateTime horaChamado;
     private LocalDateTime horaAtendimento;
+    private Boolean avaliacaoLiberada;
 }

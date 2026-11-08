@@ -2,6 +2,7 @@ package com.nowait.model;
 
 public final class StatusAgendamento {
 
+    public static final String PENDENTE = "PENDENTE";
     public static final String CONFIRMADO = "CONFIRMADO";
     public static final String CONCLUIDO = "CONCLUIDO";
     public static final String CANCELADO = "CANCELADO";

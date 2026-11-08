@@ -2,6 +2,7 @@ package com.nowait.service;
 
 import com.nowait.dto.FilaEsperaRequestDTO;
 import com.nowait.dto.FilaEsperaResponseDTO;
+import com.nowait.dto.FilaResumoDTO;
 import com.nowait.exception.BusinessRuleException;
 import com.nowait.exception.ResourceNotFoundException;
 import com.nowait.exception.UnauthorizedOperationException;
@@ -40,6 +41,7 @@ public class FilaEsperaService {
     private final AlocacaoMesaService    alocacaoMesaService;
     private final SimpMessagingTemplate  messagingTemplate;
     private final AuditoriaService       auditoriaService;
+    private final EmailService           emailService;
 
     public FilaEsperaResponseDTO entrarNaFila(String estabelecimentoId, FilaEsperaRequestDTO dto, Usuario cliente) {
         Estabelecimento estabelecimento = estabelecimentoService.buscarEntidadePorId(estabelecimentoId);
@@ -49,6 +51,10 @@ public class FilaEsperaService {
 
         auditoriaService.registrar(cliente, AcaoAuditoria.FILA_ENTRADA, ENTIDADE_FILA, entrada.getId(),
                 "estabelecimento=" + estabelecimentoId + ", pessoas=" + dto.getQuantidadePessoas());
+
+        emailService.enviarComSeguranca(() -> emailService.enviarEmailFilaNovaEntrada(
+                estabelecimento.getUsuario().getEmail(), cliente.getNome(), dto.getQuantidadePessoas()));
+
         notificarFila(estabelecimentoId);
         return toResponseDTO(entrada);
     }
@@ -85,6 +91,25 @@ public class FilaEsperaService {
         return montarListaComPosicao(estabelecimentoId);
     }
 
+    @Transactional(readOnly = true)
+    public FilaResumoDTO resumoPublico(String estabelecimentoId) {
+        Estabelecimento estabelecimento = estabelecimentoService.buscarEntidadePorId(estabelecimentoId);
+        List<FilaEspera> aguardando =
+                filaEsperaRepository.findByEstabelecimentoIdAndStatusOrderByHoraEntradaAsc(estabelecimentoId, StatusFila.AGUARDANDO);
+        List<Integer> capacidadesLivres = buscarCapacidadesLivres(estabelecimentoId);
+
+        boolean temMesaLivreAgora = !capacidadesLivres.isEmpty() && aguardando.isEmpty();
+        Integer tempoEstimado = temMesaLivreAgora
+                ? null
+                : (aguardando.size() + 1) * estabelecimento.getTempoMedioAtendimentoMinutos();
+
+        return FilaResumoDTO.builder()
+                .estabelecimentoId(estabelecimentoId)
+                .quantidadeAguardando(aguardando.size())
+                .tempoEsperaEstimadoMinutos(tempoEstimado)
+                .build();
+    }
+
     public Optional<FilaEsperaResponseDTO> minhaEntradaAtiva(Usuario cliente) {
         return filaEsperaRepository
                 .findFirstByClienteIdAndStatusInOrderByHoraEntradaDesc(cliente.getId(), STATUS_ATIVOS)
@@ -95,6 +120,14 @@ public class FilaEsperaService {
                             .findFirst()
                             .orElse(toResponseDTO(entrada));
                 });
+    }
+
+    @Transactional(readOnly = true)
+    public List<FilaEsperaResponseDTO> meuHistorico(Usuario cliente) {
+        return filaEsperaRepository.findByClienteIdOrderByHoraEntradaDesc(cliente.getId())
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
     }
 
     public FilaEsperaResponseDTO chamar(String filaId, Usuario solicitante) {
@@ -115,22 +148,6 @@ public class FilaEsperaService {
         return toResponseDTO(entrada);
     }
 
-    public void tentarChamarProximoAutomaticamente(String estabelecimentoId) {
-        List<FilaEspera> aguardando =
-                filaEsperaRepository.findByEstabelecimentoIdAndStatusOrderByHoraEntradaAsc(estabelecimentoId, StatusFila.AGUARDANDO);
-
-        if (aguardando.isEmpty()) {
-            return;
-        }
-
-        FilaEspera proxima = aguardando.get(0);
-        alocacaoMesaService.alocarMesa(estabelecimentoId, proxima.getQuantidadePessoas())
-                .ifPresent(mesa -> {
-                    efetivarChamada(proxima, mesa, null, AcaoAuditoria.FILA_CHAMADA_AUTOMATICA);
-                    log.info("Fila {} chamada automaticamente, mesa {} alocada", proxima.getId(), mesa.getId());
-                });
-    }
-
     private void efetivarChamada(FilaEspera entrada, Mesa mesa, Usuario responsavel, AcaoAuditoria acao) {
         mesa.setStatus(StatusMesa.OCUPADA);
         mesaRepository.save(mesa);
@@ -138,10 +155,14 @@ public class FilaEsperaService {
         entrada.setMesa(mesa);
         entrada.setStatus(StatusFila.CHAMADO);
         entrada.setHoraChamado(LocalDateTime.now());
-        filaEsperaRepository.save(entrada);
+        entrada = filaEsperaRepository.save(entrada);
+        final FilaEspera entradaChamada = entrada;
 
-        auditoriaService.registrar(responsavel, acao, ENTIDADE_FILA, entrada.getId(), "mesa=" + mesa.getId());
-        notificarFila(entrada.getEstabelecimento().getId());
+        auditoriaService.registrar(responsavel, acao, ENTIDADE_FILA, entradaChamada.getId(), "mesa=" + mesa.getId());
+        notificarFila(entradaChamada.getEstabelecimento().getId());
+
+        emailService.enviarComSeguranca(() -> emailService.enviarEmailFilaChamada(
+                entradaChamada.getCliente().getEmail(), entradaChamada.getEstabelecimento().getNome()));
     }
 
     public FilaEsperaResponseDTO atender(String filaId, Usuario solicitante) {
@@ -182,10 +203,28 @@ public class FilaEsperaService {
 
         entrada.setStatus(StatusFila.CANCELADO);
         entrada = filaEsperaRepository.save(entrada);
+        final FilaEspera entradaCancelada = entrada;
 
-        auditoriaService.registrar(solicitante, AcaoAuditoria.FILA_CANCELAMENTO, ENTIDADE_FILA, entrada.getId(), null);
-        notificarFila(entrada.getEstabelecimento().getId());
-        return toResponseDTO(entrada);
+        auditoriaService.registrar(solicitante, AcaoAuditoria.FILA_CANCELAMENTO, ENTIDADE_FILA, entradaCancelada.getId(), null);
+        notificarFila(entradaCancelada.getEstabelecimento().getId());
+
+        if (ehCliente) {
+            emailService.enviarComSeguranca(() -> emailService.enviarEmailFilaCanceladaPeloCliente(
+                    entradaCancelada.getEstabelecimento().getUsuario().getEmail(), entradaCancelada.getCliente().getNome()));
+        } else {
+            emailService.enviarComSeguranca(() -> emailService.enviarEmailFilaCanceladaPeloEstabelecimento(
+                    entradaCancelada.getCliente().getEmail(), entradaCancelada.getEstabelecimento().getNome()));
+        }
+        return toResponseDTO(entradaCancelada);
+    }
+
+    public void marcarAvaliacaoLiberadaPorMesa(String mesaId) {
+        filaEsperaRepository
+                .findFirstByMesaIdAndStatusAndAvaliacaoLiberadaFalseOrderByHoraAtendimentoDesc(mesaId, StatusFila.ATENDIDO)
+                .ifPresent(entrada -> {
+                    entrada.setAvaliacaoLiberada(true);
+                    filaEsperaRepository.save(entrada);
+                });
     }
 
     private FilaEspera buscarEntidadePorId(String id) {
@@ -258,6 +297,7 @@ public class FilaEsperaService {
         return FilaEsperaResponseDTO.builder()
                 .id(entrada.getId())
                 .estabelecimentoId(entrada.getEstabelecimento().getId())
+                .estabelecimentoNome(entrada.getEstabelecimento().getNome())
                 .clienteId(entrada.getCliente().getId())
                 .clienteNome(entrada.getCliente().getNome())
                 .mesaId(entrada.getMesa() != null ? entrada.getMesa().getId() : null)
@@ -268,6 +308,7 @@ public class FilaEsperaService {
                 .horaEntrada(entrada.getHoraEntrada())
                 .horaChamado(entrada.getHoraChamado())
                 .horaAtendimento(entrada.getHoraAtendimento())
+                .avaliacaoLiberada(entrada.getAvaliacaoLiberada())
                 .build();
     }
 }

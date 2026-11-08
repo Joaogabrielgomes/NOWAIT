@@ -1,6 +1,3 @@
--- Trilha de auditoria. usuario_id é texto livre (sem FK de propósito): o
--- histórico deve permanecer íntegro mesmo se a conta referenciada for
--- excluída ou anonimizada depois.
 CREATE TABLE logs_auditoria (
     id             CHAR(36)     NOT NULL DEFAULT (UUID()),
     usuario_id     CHAR(36)     NULL,

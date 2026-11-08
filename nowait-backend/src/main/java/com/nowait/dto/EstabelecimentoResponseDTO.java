@@ -16,6 +16,7 @@ public class EstabelecimentoResponseDTO {
     private String id;
     private String usuarioId;
     private String nome;
+    private String telefone;
     private EnderecoDTO endereco;
     private Integer tempoMedioAtendimentoMinutos;
     private Boolean aberto;

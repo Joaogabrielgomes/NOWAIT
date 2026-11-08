@@ -23,7 +23,6 @@ api.interceptors.response.use(
   }
 )
 
-// ── Sessão ────────────────────────────────────────────────────────────────────
 export function extrairMensagemErro(erro, mensagemPadrao = 'Não foi possível completar a operação') {
   const dados = erro.response?.data
   if (!dados) return mensagemPadrao
@@ -44,9 +43,15 @@ export const sessionHelper = {
     localStorage.removeItem('nowait_token')
     localStorage.removeItem('nowait_usuario')
   },
+  atualizarDadosLocais: (dadosPerfil) => {
+    const atual = sessionHelper.get()
+    if (!atual) return null
+    const atualizado = { ...atual, nome: dadosPerfil.nome, email: dadosPerfil.email }
+    localStorage.setItem('nowait_usuario', JSON.stringify(atualizado))
+    return atualizado
+  },
 }
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
 export const authService = {
   login:    (email, senha) => api.post('/auth/login', { email, senha }),
   registrar: (nome, email, senha, role, aceiteTermos) =>
@@ -56,24 +61,24 @@ export const authService = {
 }
 
 export const usuarioService = {
-  meuPerfil: () => api.get('/usuarios/me'),
+  meuPerfil:        () => api.get('/usuarios/me'),
+  atualizarPerfil:  (dto) => api.put('/usuarios/me', dto),
+  excluirConta:     () => api.delete('/usuarios/me'),
 }
 
-// ── CEP ───────────────────────────────────────────────────────────────────────
 export const cepService = {
   buscar: (cep) => api.get(`/cep/${cep}`),
 }
 
-// ── Estabelecimentos ──────────────────────────────────────────────────────────
 export const estabelecimentoService = {
   listarTodos:  ()      => api.get('/estabelecimentos'),
   buscarPorId:  (id)    => api.get(`/estabelecimentos/${id}`),
   meuEstabelecimento: () => api.get('/estabelecimentos/me'),
   criar:        (dto)   => api.post('/estabelecimentos', dto),
   atualizar:    (id, dto) => api.put(`/estabelecimentos/${id}`, dto),
+  buscarPorNome: (nome) => api.get('/estabelecimentos/search', { params: { nome } }),
 }
 
-// ── Mesas ─────────────────────────────────────────────────────────────────────
 export const mesaService = {
   listar:          (estabelecimentoId) => api.get(`/estabelecimentos/${estabelecimentoId}/mesas`),
   criar:           (estabelecimentoId, dto) => api.post(`/estabelecimentos/${estabelecimentoId}/mesas`, dto),
@@ -82,7 +87,6 @@ export const mesaService = {
   remover:         (mesaId) => api.delete(`/mesas/${mesaId}`),
 }
 
-// ── Fila de espera ────────────────────────────────────────────────────────────
 export const filaService = {
   entrar:           (estabelecimentoId, quantidadePessoas) =>
                        api.post(`/estabelecimentos/${estabelecimentoId}/fila`, { quantidadePessoas }),
@@ -91,22 +95,41 @@ export const filaService = {
   chamar:           (filaId) => api.patch(`/fila/${filaId}/chamar`),
   atender:          (filaId) => api.patch(`/fila/${filaId}/atender`),
   cancelar:         (filaId) => api.patch(`/fila/${filaId}/cancelar`),
+  resumoPublico:    (estabelecimentoId) => api.get(`/estabelecimentos/${estabelecimentoId}/fila/resumo`),
+  meuHistorico:     () => api.get('/fila/me/historico'),
 }
 
-// ── Agendamentos ──────────────────────────────────────────────────────────────
+export const favoritoService = {
+  listarMeus: ()     => api.get('/favoritos'),
+  listarIds:  ()     => api.get('/favoritos/ids'),
+  adicionar:  (estabelecimentoId) => api.post(`/estabelecimentos/${estabelecimentoId}/favorito`),
+  remover:    (estabelecimentoId) => api.delete(`/estabelecimentos/${estabelecimentoId}/favorito`),
+}
+
 export const agendamentoService = {
   criar:              (estabelecimentoId, dto) => api.post(`/estabelecimentos/${estabelecimentoId}/agendamentos`, dto),
   listarPorEstabelecimento: (estabelecimentoId) => api.get(`/estabelecimentos/${estabelecimentoId}/agendamentos`),
   listarMeus:         () => api.get('/agendamentos/me'),
-  cancelar:           (id) => api.patch(`/agendamentos/${id}/cancelar`),
+  aceitar:            (id) => api.patch(`/agendamentos/${id}/aceitar`),
+  recusar:            (id, motivo) => api.patch(`/agendamentos/${id}/recusar`, { motivo }),
+  cancelar:           (id, motivo) => api.patch(`/agendamentos/${id}/cancelar`, motivo ? { motivo } : undefined),
   confirmarChegada:   (id) => api.patch(`/agendamentos/${id}/confirmar-chegada`),
 }
 
-// ── Admin ─────────────────────────────────────────────────────────────────────
+export const avaliacaoService = {
+  avaliar:            (dto) => api.post('/avaliacoes', dto),
+  listarPendentes:    () => api.get('/avaliacoes/pendentes'),
+  listarPorEstabelecimento: (estabelecimentoId) => api.get(`/estabelecimentos/${estabelecimentoId}/avaliacoes`),
+  resumoPublico:      (estabelecimentoId) => api.get(`/estabelecimentos/${estabelecimentoId}/avaliacoes/resumo`),
+}
+
 export const adminService = {
   listarUsuarios:        () => api.get('/admin/usuarios'),
   removerUsuario:        (id) => api.delete(`/admin/usuarios/${id}`),
   listarEstabelecimentos: () => api.get('/admin/estabelecimentos'),
+  dashboard:             () => api.get('/admin/dashboard'),
+  auditoria:             (params) => api.get('/admin/auditoria', { params }),
+  exportarAuditoria:     (params) => api.get('/admin/auditoria/export', { params, responseType: 'blob' }),
 }
 
 export default api

@@ -46,7 +46,14 @@ public class Agendamento {
 
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private String status = StatusAgendamento.CONFIRMADO;
+    private String status = StatusAgendamento.PENDENTE;
+
+    @Column(name = "motivo_cancelamento", length = 255)
+    private String motivoCancelamento;
+
+    @Column(name = "avaliacao_liberada", nullable = false)
+    @Builder.Default
+    private Boolean avaliacaoLiberada = false;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

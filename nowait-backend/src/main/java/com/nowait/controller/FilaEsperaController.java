@@ -2,6 +2,7 @@ package com.nowait.controller;
 
 import com.nowait.dto.FilaEsperaRequestDTO;
 import com.nowait.dto.FilaEsperaResponseDTO;
+import com.nowait.dto.FilaResumoDTO;
 import com.nowait.model.Usuario;
 import com.nowait.service.FilaEsperaService;
 import jakarta.validation.Valid;
@@ -33,11 +34,21 @@ public class FilaEsperaController {
         return ResponseEntity.ok(filaEsperaService.listarFila(estabelecimentoId, usuario));
     }
 
+    @GetMapping("/api/estabelecimentos/{estabelecimentoId}/fila/resumo")
+    public ResponseEntity<FilaResumoDTO> resumoPublico(@PathVariable String estabelecimentoId) {
+        return ResponseEntity.ok(filaEsperaService.resumoPublico(estabelecimentoId));
+    }
+
     @GetMapping("/api/fila/me/ativa")
     public ResponseEntity<FilaEsperaResponseDTO> minhaEntradaAtiva(@AuthenticationPrincipal Usuario usuario) {
         return filaEsperaService.minhaEntradaAtiva(usuario)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.noContent().build());
+    }
+
+    @GetMapping("/api/fila/me/historico")
+    public ResponseEntity<List<FilaEsperaResponseDTO>> meuHistorico(@AuthenticationPrincipal Usuario usuario) {
+        return ResponseEntity.ok(filaEsperaService.meuHistorico(usuario));
     }
 
     @PatchMapping("/api/fila/{id}/chamar")

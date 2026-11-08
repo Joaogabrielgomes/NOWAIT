@@ -1,5 +1,6 @@
 package com.nowait.controller;
 
+import com.nowait.dto.DashboardResumoDTO;
 import com.nowait.dto.EstabelecimentoResponseDTO;
 import com.nowait.dto.LogAuditoriaResponseDTO;
 import com.nowait.dto.UsuarioResponseDTO;
@@ -8,6 +9,8 @@ import com.nowait.model.Usuario;
 import com.nowait.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +40,11 @@ public class AdminController {
         return ResponseEntity.ok(adminService.listarEstabelecimentos());
     }
 
+    @GetMapping("/dashboard")
+    public ResponseEntity<DashboardResumoDTO> dashboard() {
+        return ResponseEntity.ok(adminService.obterResumoDashboard());
+    }
+
     @GetMapping("/auditoria")
     public ResponseEntity<Page<LogAuditoriaResponseDTO>> listarAuditoria(
             @RequestParam(required = false) String usuarioId,
@@ -44,5 +52,16 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "20") int tamanho) {
         return ResponseEntity.ok(adminService.listarAuditoria(usuarioId, acao, pagina, tamanho));
+    }
+
+    @GetMapping("/auditoria/export")
+    public ResponseEntity<byte[]> exportarAuditoria(
+            @RequestParam(required = false) String usuarioId,
+            @RequestParam(required = false) AcaoAuditoria acao) {
+        byte[] csv = adminService.exportarAuditoriaCsv(usuarioId, acao);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=auditoria.csv")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(csv);
     }
 }

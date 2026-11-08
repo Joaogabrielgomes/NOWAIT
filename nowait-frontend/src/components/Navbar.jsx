@@ -17,10 +17,7 @@ export default function Navbar() {
         <Link to="/">Estabelecimentos</Link>
 
         {usuario?.role === 'CLIENTE' && (
-          <>
-            <Link to="/minha-fila">Minha fila</Link>
-            <Link to="/meus-agendamentos">Meus agendamentos</Link>
-          </>
+          <Link to="/minhas-solicitacoes">Fila e agendamentos</Link>
         )}
 
         {usuario?.role === 'ESTABELECIMENTO' && (
@@ -33,7 +30,7 @@ export default function Navbar() {
 
         {usuario ? (
           <>
-            <span className="user-tag">{usuario.nome}</span>
+            <Link to="/perfil">{usuario.nome}</Link>
             <button className="secondary small" onClick={sair}>Sair</button>
           </>
         ) : (

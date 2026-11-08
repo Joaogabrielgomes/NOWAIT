@@ -2,6 +2,7 @@ CREATE TABLE estabelecimentos (
     id                              CHAR(36)     NOT NULL DEFAULT (UUID()),
     usuario_id                      CHAR(36)     NOT NULL,
     nome                            VARCHAR(150) NOT NULL,
+    telefone                        VARCHAR(20)  NOT NULL,
     cep                             VARCHAR(9)   NOT NULL,
     logradouro                      VARCHAR(150) NOT NULL,
     numero                          VARCHAR(10)  NOT NULL,
