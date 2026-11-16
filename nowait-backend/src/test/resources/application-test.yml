@@ -1,0 +1,30 @@
+# Perfil usado apenas pelos testes de integração (@ActiveProfiles("test")). Substitui o
+# MySQL por um banco H2 em memória, em modo de compatibilidade MySQL, para que os testes
+# rodem em qualquer máquina sem precisar de um servidor de banco de dados configurado.
+# O Flyway é desligado aqui porque o H2 cria o schema a partir das entidades (ddl-auto),
+# evitando reescrever e manter todas as migrations em dois dialetos (MySQL e H2).
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:nowait_test;DB_CLOSE_DELAY=-1;MODE=MySQL
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+  flyway:
+    enabled: false
+
+  mail:
+    username: teste@nowait.local
+    password: senha-de-teste
+
+jwt:
+  secret: chave-secreta-apenas-para-testes-automatizados-0123456789
+  expiration: 86400000
+
+app:
+  url: http://localhost:5173

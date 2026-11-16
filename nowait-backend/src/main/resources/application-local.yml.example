@@ -1,0 +1,21 @@
+# Modelo de configuração local. Copie este arquivo para "application-local.yml"
+# (mesma pasta) e preencha com os seus próprios valores — esse segundo arquivo
+# é ignorado pelo Git (ver .gitignore) de propósito, para nunca versionar
+# credenciais reais. Nenhum valor abaixo é uma credencial válida.
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/nowait?useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Sao_Paulo
+    username: SEU_USUARIO_MYSQL
+    password: SUA_SENHA_MYSQL
+
+  mail:
+    username: seu-email@gmail.com
+    password: SUBSTITUA_PELA_SENHA_DE_APP_DO_GMAIL
+
+jwt:
+  # Qualquer string longa e aleatória. Gere uma própria, não reaproveite esta.
+  secret: troque-por-uma-chave-secreta-longa-e-aleatoria
+
+app:
+  url: http://localhost:5173

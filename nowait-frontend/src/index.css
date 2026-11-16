@@ -1,0 +1,730 @@
+@import url('https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+/*
+  NOWAIT design system — "host stand" identity.
+  The product's real moment is a ticket: a number, a wait time, a table
+  freeing up. Tokens below lean on that — a charred-kitchen dark surface,
+  an ember accent reserved for "open/active" signals, a herb green for
+  availability, and two voices of type: Zilla Slab for anything that
+  reads like a printed ticket or menu board, IBM Plex Sans for UI and
+  numbers (it sets tabular figures cleanly, which matters here — wait
+  times and table counts are everywhere).
+*/
+
+:root {
+  --bg: #121110;
+  --bg-card: #1d1a18;
+  --bg-elevated: #262220;
+  --border: #37312c;
+  --text: #f1ece2;
+  --text-muted: #a89b8c;
+
+  --primary: #e2581f;
+  --primary-hover: #f17438;
+  --accent-herb: #7a9b5e;
+  --success: #6f9c5a;
+  --warning: #d49a3c;
+  --danger: #c1452f;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius: var(--radius-md);
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.5);
+
+  --font-display: 'Zilla Slab', 'Georgia', serif;
+  --font-body: 'IBM Plex Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  font-family: var(--font-body);
+}
+
+:root[data-theme='light'] {
+  --bg: #f1f1ec;
+  --bg-card: #ffffff;
+  --bg-elevated: #e9e7de;
+  --border: #dad6c9;
+  --text: #211c15;
+  --text-muted: #6c6355;
+
+  --primary: #cf4a18;
+  --primary-hover: #b13d12;
+  --accent-herb: #4d7a3a;
+  --success: #4d7a3a;
+  --warning: #96650f;
+  --danger: #a3301f;
+
+  --shadow-card: 0 1px 2px rgba(30, 24, 16, 0.08);
+  --shadow-hover: 0 16px 30px rgba(30, 24, 16, 0.14);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.2s, color 0.2s;
+  font-variant-numeric: tabular-nums;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.1px;
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { color: var(--primary-hover); }
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar .brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--primary);
+}
+
+.navbar nav {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  font-size: 0.92rem;
+}
+
+.navbar .user-tag {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.card h3 { margin-top: 0; }
+
+/* Browsing cards get the ticket treatment: a bigger radius than the
+   rest of the UI, and a stub-shaped avatar with one clipped corner
+   (below) instead of a plain rounded square. Utility surfaces (card,
+   modal, table rows) stay on the plain, sharper radius above on
+   purpose — the hierarchy is intentional, not an oversight. */
+.estabelecimento-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.estabelecimento-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-3px);
+}
+
+.estabelecimento-avatar {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px 6px 16px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  object-fit: cover;
+}
+
+.estabelecimento-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.estabelecimento-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.estabelecimento-topo h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.estabelecimento-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin: 6px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.estabelecimento-meta .separador { opacity: 0.6; }
+
+.estabelecimento-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.grid-fit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.form-group { margin-bottom: 14px; }
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Formulário de cadastro/edição de estabelecimento: os rótulos dos campos
+   usam o mesmo laranja dos outros títulos da aplicação, a pedido. */
+.form-titulos-destaque .form-group label {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+
+input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* Checkboxes/radios não entram na regra acima (senão herdam width:100% e padding
+   e ficam esticados ocupando a largura inteira do formulário, como na tela de
+   resolver denúncia). Tamanho fixo e alinhado à primeira linha do texto ao lado. */
+input[type="checkbox"], input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--primary);
+}
+
+button, .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+button:hover { background: var(--primary-hover); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+button.secondary {
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+button.secondary:hover { background: var(--border); }
+
+button.danger { background: var(--danger); }
+button.danger:hover { background: #d85a42; }
+
+button.small { padding: 6px 12px; font-size: 0.8rem; }
+
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.error-box {
+  background: rgba(193, 69, 47, 0.12);
+  border: 1px solid var(--danger);
+  color: #ff9d87;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  font-size: 0.88rem;
+}
+
+.info-box {
+  background: rgba(111, 156, 90, 0.12);
+  border: 1px solid var(--success);
+  color: var(--success);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  font-size: 0.88rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.badge.AGUARDANDO, .badge.PENDENTE, .badge.CONFIRMADO, .badge.LIVRE { background: rgba(212, 154, 60, 0.15); color: var(--warning); }
+.badge.CHAMADO { background: rgba(111, 156, 90, 0.15); color: var(--success); }
+.badge.ATENDIDO, .badge.CONCLUIDO, .badge.OCUPADA { background: rgba(168, 155, 140, 0.15); color: var(--text-muted); }
+.badge.CANCELADO, .badge.EXPIRADO { background: rgba(193, 69, 47, 0.15); color: var(--danger); }
+.badge.RESERVADA { background: rgba(226, 88, 31, 0.15); color: var(--primary); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+th, td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+th { color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.3px; }
+
+.auth-wrapper {
+  max-width: 380px;
+  margin: 60px auto;
+  padding: 0 16px;
+}
+
+.auth-wrapper h2 { font-size: 1.6rem; margin-bottom: 18px; }
+
+.text-muted { color: var(--text-muted); }
+.text-center { text-align: center; }
+.mt-16 { margin-top: 16px; }
+.mb-16 { margin-bottom: 16px; }
+
+/* Textos de apoio mais longos (explicações de campo, avisos de conta) —
+   um pouco maiores que o texto-muted padrão e justificados, para não
+   ficarem comprimidos numa única leitura corrida. */
+.texto-ajuda {
+  font-size: 0.88rem;
+  text-align: justify;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* Ícone de ajuda (CampoAjuda) ao lado de um label — mostra a explicação do campo
+   numa mini caixa flutuante ao passar o mouse ou focar, em vez de texto sempre visível. */
+.campo-ajuda {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  color: var(--text-muted);
+  cursor: help;
+  vertical-align: middle;
+}
+
+.campo-ajuda:hover,
+.campo-ajuda:focus {
+  color: var(--primary);
+  outline: none;
+}
+
+.campo-ajuda-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 230px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
+  box-shadow: var(--shadow-hover);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.campo-ajuda:hover .campo-ajuda-tooltip,
+.campo-ajuda:focus .campo-ajuda-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px 16px;
+}
+
+.position-highlight {
+  text-align: center;
+  padding: 30px;
+}
+.position-highlight .number {
+  font-family: var(--font-display);
+  font-size: 3.4rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  max-width: 640px;
+  width: 100%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.modal-body {
+  overflow-y: auto;
+  padding: 28px;
+  white-space: pre-wrap;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.modal-body h2 {
+  color: var(--text);
+  font-size: 1.15rem;
+  margin-top: 0;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--primary);
+  font-size: inherit;
+  font-weight: 400;
+  cursor: pointer;
+}
+.link-button:hover { background: none; color: var(--primary-hover); text-decoration: underline; }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 24px;
+}
+
+.pagination button {
+  min-width: 36px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pagination-dots {
+  color: var(--text-muted);
+  padding: 0 4px;
+}
+
+.chamado-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px;
+}
+
+.chamado-line strong {
+  font-size: 0.95rem;
+}
+
+.chamado-line .text-muted {
+  font-size: 0.85rem;
+}
+
+.favorito-btn {
+  background: none;
+  border: none;
+  padding: 2px;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.favorito-btn:hover { background: none; color: var(--warning); }
+
+.star-rating { display: inline-flex; gap: 2px; line-height: 1; }
+.star { color: var(--border); }
+.star.filled { color: var(--primary); }
+.star.interactive { cursor: pointer; }
+.favorito-btn.ativo { color: var(--warning); }
+
+.navbar-menu {
+  position: relative;
+}
+
+.navbar-menu-trigger {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.navbar-menu-trigger:hover {
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+
+.navbar-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-hover);
+  padding: 6px;
+  z-index: 100;
+}
+
+.navbar-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.navbar-menu-item:hover {
+  background: var(--bg-elevated);
+}
+
+.navbar-menu-item.sair { background: none; color: var(--danger); }
+
+.navbar-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 4px;
+}
+
+.theme-switch {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  flex-shrink: 0;
+  background: var(--border);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.theme-switch.ativo { background: var(--primary); }
+
+.theme-switch .knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.15s ease;
+}
+
+.theme-switch.ativo .knob {
+  transform: translateX(16px);
+}
+
+.estabelecimento-banner {
+  position: relative;
+  height: 200px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.estabelecimento-banner > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.estabelecimento-banner-overlay {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  width: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+}
+
+.estabelecimento-banner-logo {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px 6px 16px 6px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  object-fit: cover;
+}
+
+.estabelecimento-banner-overlay h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.4rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.upload-imagem-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.upload-imagem-preview-logo {
+  width: 96px;
+  height: 96px;
+  border-radius: 18px 8px 18px 8px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+.upload-imagem-preview-banner {
+  width: 100%;
+  max-width: 420px;
+  height: 140px;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+.upload-imagem-vazio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated);
+  border: 1px dashed var(--border);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.upload-imagem-erro {
+  color: var(--danger);
+  font-size: 0.78rem;
+  margin: 0;
+}
