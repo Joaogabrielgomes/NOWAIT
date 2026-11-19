@@ -196,7 +196,7 @@ class UsuarioServiceTest {
 
         usuarioService.excluirPropriaConta(usuario);
 
-        verify(usuarioRepository, never()).delete(any());
+        verify(usuarioRepository, never()).delete(any(Usuario.class));
         assertThat(usuario.getNome()).isEqualTo("Usuário removido");
         assertThat(usuario.getEmail()).contains("@anonimizado.nowait");
         assertThat(usuario.getCep()).isNull();

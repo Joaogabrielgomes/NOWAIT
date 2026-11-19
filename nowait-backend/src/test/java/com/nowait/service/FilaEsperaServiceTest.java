@@ -136,7 +136,7 @@ class FilaEsperaServiceTest {
         assertThat(resposta.getStatus()).isEqualTo(StatusFila.AGUARDANDO);
         assertThat(resposta.getQuantidadePessoas()).isEqualTo(2);
         verify(filaEsperaRepository).save(any(FilaEspera.class));
-        verify(messagingTemplate).convertAndSend(eq("/topic/fila.estab-1"), any());
+        verify(messagingTemplate).convertAndSend(eq("/topic/fila.estab-1"), any(Object.class));
     }
 
     @Test

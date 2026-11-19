@@ -69,7 +69,7 @@ class AdminServiceTest {
         assertThatThrownBy(() -> adminService.removerUsuario("usr-1", admin))
                 .isInstanceOf(BusinessRuleException.class);
 
-        verify(usuarioRepository, never()).delete(any());
+        verify(usuarioRepository, never()).delete(any(Usuario.class));
     }
 
     @Test
