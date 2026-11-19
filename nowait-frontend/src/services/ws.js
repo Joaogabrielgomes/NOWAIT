@@ -1,9 +1,11 @@
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 
+const WS_URL = import.meta.env.VITE_WS_URL || '/ws'
+
 export function conectarFila(estabelecimentoId, onUpdate) {
   const client = new Client({
-    webSocketFactory: () => new SockJS('/ws'),
+    webSocketFactory: () => new SockJS(WS_URL),
     reconnectDelay: 4000,
     onConnect: () => {
       client.subscribe(`/topic/fila.${estabelecimentoId}`, (message) => {
